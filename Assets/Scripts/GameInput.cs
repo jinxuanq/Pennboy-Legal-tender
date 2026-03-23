@@ -13,6 +13,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler<int> OnInventoryAction;
     public event EventHandler OnOrderList;
     public event EventHandler OnThrowDrink;
+    public event EventHandler OnTutorial;
 
     private PlayerInputActions playerInputActions;
     private void Awake()
@@ -23,6 +24,7 @@ public class GameInput : MonoBehaviour
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
         playerInputActions.OrderList.Enable();
+        playerInputActions.Tutorial.Enable();
 
         playerInputActions.Player.Interact.performed += Interact_performed;
         playerInputActions.Player.Inventory1.performed += Inventory1_performed;
@@ -31,6 +33,7 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.Inventory4.performed += Inventory4_performed;
         playerInputActions.Player.Inventory5.performed += Inventory5_performed;
         playerInputActions.OrderList.OrderList.performed += OrderList_performed;
+        playerInputActions.Tutorial.Tutorial.performed += Tutorial_performed;
         playerInputActions.Player.Throw.performed += Throw_performed;
     }
 
@@ -66,6 +69,10 @@ public class GameInput : MonoBehaviour
     {
         OnOrderList?.Invoke(this, EventArgs.Empty);
     }
+    private void Tutorial_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        OnTutorial?.Invoke(this, EventArgs.Empty);
+    }
 
     private void Throw_performed(InputAction.CallbackContext obj)
     {
@@ -79,12 +86,14 @@ public class GameInput : MonoBehaviour
             playerInputActions.Player.Disable();
             playerInputActions.Locked.Enable();
             playerInputActions.OrderList.Disable();
+            playerInputActions.Tutorial.Disable();
         }
         else
         {
             playerInputActions.Player.Enable();
             playerInputActions.Locked.Disable();
             playerInputActions.OrderList.Enable();
+            playerInputActions.Tutorial.Enable();
         }
     }
 
@@ -95,12 +104,14 @@ public class GameInput : MonoBehaviour
             playerInputActions.Player.Disable();
             playerInputActions.Locked.Enable();
             playerInputActions.OrderList.Enable();
+            playerInputActions.Tutorial.Enable();
         }
         else
         {
             playerInputActions.Player.Enable();
             playerInputActions.Locked.Disable();
             playerInputActions.OrderList.Enable();
+            playerInputActions.Tutorial.Enable();
         }
     }
     public Vector2 GetMovementVectorNormalized()

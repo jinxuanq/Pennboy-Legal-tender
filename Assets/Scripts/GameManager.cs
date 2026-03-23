@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] int money;
     [SerializeField] int moneyWin;
     [SerializeField] private GameInput gameInput;
+    private bool won;
 
 
     public int Money
@@ -36,10 +38,24 @@ public class GameManager : MonoBehaviour
     private Dictionary<Customer, TextMeshProUGUI> activeOrders = new Dictionary<Customer, TextMeshProUGUI>();
     private Dictionary<Customer, OrderIconSetter> activeIcons = new Dictionary<Customer, OrderIconSetter>();
 
+    //WinUI
+    [SerializeField] private GameObject winScreen;
+
     private void Awake()
     {
         if (instance) Destroy(this.gameObject);
         else instance = this;
+    }
+
+    private void Start()
+    {
+        StartCoroutine(begin());
+    }
+    private IEnumerator begin()
+    {
+        winScreen.SetActive(true);
+        yield return new WaitForSeconds(3);
+        winScreen.SetActive(false);
     }
 
     // --- Order UI management ---
@@ -119,16 +135,13 @@ public class GameManager : MonoBehaviour
         Pause
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        if (money >= moneyWin){StateChanged(GameState.Win);}
+        if (!won)
+        {
+            if (money >= moneyWin){StateChanged(GameState.Win);}
+        }
     }
 
 
@@ -177,7 +190,9 @@ public class GameManager : MonoBehaviour
     }
     private void Win()
     {
-
+        won = true;
+        winScreen.SetActive(true);
+        gameInput.LockInput(true);
     }
     private void Lose()
     {

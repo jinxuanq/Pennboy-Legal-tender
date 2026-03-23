@@ -11,6 +11,7 @@ public class PlayerInteract : MonoBehaviour
 
     [SerializeField] private GameObject eButton;
     [SerializeField] private GameObject orderList;
+    [SerializeField] private GameObject tutorial;
 
     private GlasswareCounter currentGlassware;
     public Customer currentCustomer;
@@ -31,10 +32,12 @@ public class PlayerInteract : MonoBehaviour
         gameInput.OnInteractAction += GameInput_OnInteractAction;
         gameInput.OnInventoryAction += GameInput_OnInventoryAction;
         gameInput.OnOrderList += GameInput_OnOrderList;
+        gameInput.OnTutorial += GameInput_OnTutorial;
         previousHit = Physics2D.Raycast(transform.position, gameInput.GetMovementVectorNormalized(), 0);
 
         eButton.SetActive(false);
     }
+
 
     private void GameInput_OnInteractAction(object sender, System.EventArgs e)
     {
@@ -65,6 +68,21 @@ public class PlayerInteract : MonoBehaviour
             orderList.SetActive(true);
         }
     }
+
+    void GameInput_OnTutorial(object sender, System.EventArgs e)
+    {
+        if (tutorial.activeSelf)
+        {
+            GameInput.instance.LockInputWithReturn(false);
+            tutorial.SetActive(false);
+        }
+        else
+        {
+            GameInput.instance.LockInputWithReturn(true);
+            tutorial.SetActive(true);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {

@@ -268,6 +268,34 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Tutorial"",
+            ""id"": ""56976911-40d2-4e6c-a086-b1e2a7707616"",
+            ""actions"": [
+                {
+                    ""name"": ""Tutorial"",
+                    ""type"": ""Button"",
+                    ""id"": ""d947d1ab-c1e7-412e-87a1-f03ad6132b70"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""ec5f3625-a9e4-43d5-9822-03586fe0c044"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tutorial"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -287,6 +315,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // OrderList
         m_OrderList = asset.FindActionMap("OrderList", throwIfNotFound: true);
         m_OrderList_OrderList = m_OrderList.FindAction("OrderList", throwIfNotFound: true);
+        // Tutorial
+        m_Tutorial = asset.FindActionMap("Tutorial", throwIfNotFound: true);
+        m_Tutorial_Tutorial = m_Tutorial.FindAction("Tutorial", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -530,6 +561,52 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public OrderListActions @OrderList => new OrderListActions(this);
+
+    // Tutorial
+    private readonly InputActionMap m_Tutorial;
+    private List<ITutorialActions> m_TutorialActionsCallbackInterfaces = new List<ITutorialActions>();
+    private readonly InputAction m_Tutorial_Tutorial;
+    public struct TutorialActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public TutorialActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Tutorial => m_Wrapper.m_Tutorial_Tutorial;
+        public InputActionMap Get() { return m_Wrapper.m_Tutorial; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(TutorialActions set) { return set.Get(); }
+        public void AddCallbacks(ITutorialActions instance)
+        {
+            if (instance == null || m_Wrapper.m_TutorialActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_TutorialActionsCallbackInterfaces.Add(instance);
+            @Tutorial.started += instance.OnTutorial;
+            @Tutorial.performed += instance.OnTutorial;
+            @Tutorial.canceled += instance.OnTutorial;
+        }
+
+        private void UnregisterCallbacks(ITutorialActions instance)
+        {
+            @Tutorial.started -= instance.OnTutorial;
+            @Tutorial.performed -= instance.OnTutorial;
+            @Tutorial.canceled -= instance.OnTutorial;
+        }
+
+        public void RemoveCallbacks(ITutorialActions instance)
+        {
+            if (m_Wrapper.m_TutorialActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ITutorialActions instance)
+        {
+            foreach (var item in m_Wrapper.m_TutorialActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_TutorialActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public TutorialActions @Tutorial => new TutorialActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -547,5 +624,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     public interface IOrderListActions
     {
         void OnOrderList(InputAction.CallbackContext context);
+    }
+    public interface ITutorialActions
+    {
+        void OnTutorial(InputAction.CallbackContext context);
     }
 }
